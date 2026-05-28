@@ -70,8 +70,6 @@ def air_resistance_f(velocity):
         force = force_magnitude
     return force
 
-weight = mass * g
-
 screen_width = 1920
 screen_height = 1080
 
