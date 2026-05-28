@@ -44,7 +44,32 @@ class Particle:
         self.displacement = [0.0, 0.0]
         self.position = [0.0, 0.0]
 #particles
-ball = Particle("ball",ball_radius ,rubber)
+particle_library = {
+    "1": Particle("rubber ball",0.11, rubber),
+    "2": Particle("marble", 0.008, glass),
+    "3": Particle("steel ball", 0.25, steel),
+    "4": Particle("wooden ball", 0.032, wood)
+}
+
+
+
+while True:
+    choice = input("choose a particle 1/2/3/4 else C for a custom particle: ")
+    if choice in ["1","2","3","4"] :
+        current_particle = particle_library[choice]
+        break
+    elif (choice.lower()).strip() == "c":
+        current_particle = Particle(input("enter your particle name:"), float(input("enter your particle radius:")), input("enter your particle material [wood ,rubber ,glass ,steel]:"))
+        break
+    else:
+        print("please choose a particle 1-4 or C")
+
+current_material = current_particle.material
+e = current_material.e
+mu = current_material.roughness
+density = current_material.density
+ball_radius = current_particle.radius
+mass = (4/3) * math.pi * (ball_radius**3) * density
 
 
 # Variables which decide if the ball is actually running, and which material.
