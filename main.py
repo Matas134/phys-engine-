@@ -6,15 +6,6 @@ import sys
 #values
 g = 9.81
 PPM = 100.0
-ball_radius = 0.5
-#x, y values
-initial_velocity = [0.0, 10.0]
-velocity = [0.0, 0.0]
-sum_forces = [0.0, 0.0]
-acceleration = [0.0, 0.0]
-displacement = [0.0, 0.0]
-forces = [0.0, 0.0]
-position = [0.0, 0.0]
 #time
 dt = 0.1
 current_time = 0
@@ -43,6 +34,7 @@ class Particle:
         self.acceleration = [0.0, 0.0]
         self.displacement = [0.0, 0.0]
         self.position = [0.0, 0.0]
+        self.sum_forces = [0.0, 0.0]
 #particles
 particle_library = {
     "1": Particle("rubber ball",0.11, rubber),
@@ -50,7 +42,6 @@ particle_library = {
     "3": Particle("steel ball", 0.25, steel),
     "4": Particle("wooden ball", 0.032, wood)
 }
-
 
 
 while True:
@@ -128,7 +119,7 @@ while True:
                     mu = current_material.roughness
                     density = current_material.density
                     mass = (4/3) * math.pi * (ball_radius**3) * density
-                    weight = mass * g            
+                    weight = mass * g
         elif event.type == pygame.VIDEORESIZE:
             screen_width = event.w
             screen_height = event.h
@@ -167,61 +158,60 @@ while True:
 
         pygame.display.flip()
         continue
-    position[0] = ((displacement[0] * PPM) + offset[0])
-    position[1] = ((displacement[1] * PPM) + offset[1])
+    current_particle.position[0] = ((current_particle.displacement[0] * PPM) + offset[0])
+    current_particle.position[1] = ((current_particle.displacement[1] * PPM) + offset[1])
     ball_colour = (155, 0, 0)
 
     if current_material is not None:
         ball_colour = current_material.colour
 
-    pygame.draw.circle(screen, ball_colour, (position[0], position[1]), int(ball_radius * PPM))
+    pygame.draw.circle(screen, ball_colour, (current_particle.position[0], current_particle.position[1]), int(ball_radius * PPM))
     rectangle_height = 100
     rectangle_length = 80
     pygame.draw.rect(screen, (155,155,155),((offset[0] - (rectangle_length/2)*PPM)  ,((4)*PPM) + offset[1] ,rectangle_length*PPM ,rectangle_height*PPM ))
-    #X forcecomponents
+    #X force components
 
     #Y force components
-    drag_AR = air_resistance_f(velocity[1])
-    sum_forces[1] = drag_AR + weight
+    drag_AR = air_resistance_f(current_particle.velocity[1])
+    current_particle.sum_forces[1] = drag_AR + weight
     #collisions
-    if displacement[1] >= 4-ball_radius:
-        displacement[1] = 4-ball_radius
-        if abs(velocity[1]) > 0.1:
-            velocity[1] *= -e
+    if current_particle.displacement[1] >= 4-ball_radius:
+        current_particle.displacement[1] = 4-ball_radius
+        if abs(current_particle.velocity[1]) > 0.1:
+            current_particle.velocity[1] *= -e
         else:
-            velocity[1] = 0
-            normal_force = -sum_forces[1]
-            sum_forces[1] += normal_force  #reaction force
+            current_particle.velocity[1] = 0
+            normal_force = -current_particle.sum_forces[1]
+            current_particle.sum_forces[1] += normal_force  #reaction force
 
             time.sleep(1.5)
 
             current_feedback = False
             current_material = None
 
-            displacement = [0.0, 0.0]
-            velocity = [0.0, 0.0]
-            acceleration = [0.0, 0.0]
-            sum_forces = [0.0, 0.0]
-            current_time = 0
+            current_particle.displacement = [0.0, 0.0]
+            current_particle.velocity = [0.0, 0.0]
+            current_particle.acceleration = [0.0, 0.0]
+            current_particle.sum_forces = [0.0, 0.0]
+            current_particle.current_time = 0
     #acceleration velocity displacement
-    acceleration[1] = sum_forces[1] / mass
-    velocity[1] += acceleration[1] * dt
-    displacement[1] += velocity[1] * dt
+    current_particle.acceleration[1] = current_particle.sum_forces[1] / mass
+    current_particle.velocity[1] += current_particle.acceleration[1] * dt
+    current_particle.displacement[1] += current_particle.velocity[1] * dt
 
 
 
 #console
     print(f"seconds :{current_time}")
     #Y values
-    print(f"total force  X: {sum_forces[0]} Y:{sum_forces[1]}")
-    print(f"acceleration X: {acceleration[0]} Y:{acceleration[1]}")
-    print(f"velocity     X: {velocity[0]} Y:{velocity[1]}")
-    print(f"displacement X: {displacement[0]} Y:{displacement[1]}")
+    print(f"total force  X: {current_particle.sum_forces[0]} Y:{current_particle.sum_forces[1]}")
+    print(f"acceleration X: {current_particle.acceleration[0]} Y:{current_particle.acceleration[1]}")
+    print(f"velocity     X: {current_particle.velocity[0]} Y:{current_particle.velocity[1]}")
+    print(f"displacement X: {current_particle.displacement[0]} Y:{current_particle.displacement[1]}")
 
 
     current_time += dt
     pygame.display.flip()
-
 
 
 
