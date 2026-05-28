@@ -96,6 +96,11 @@ screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE
 clock = pygame.time.Clock()
 pygame.font.init()
 fps_font = pygame.font.SysFont(None, 30)
+
+
+
+
+#main render 
 while True:
 
     for event in pygame.event.get():
