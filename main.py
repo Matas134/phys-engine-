@@ -47,12 +47,16 @@ class Particle:
 ball = Particle("ball",ball_radius ,rubber)
 
 
-#TEMP!
-current_material = glass
-e = current_material.e
-mu = current_material.roughness
-density = current_material.density
-mass = (4/3) * math.pi * (ball_radius**3) * density
+# Variables which decide if the ball is actually running, and which material.
+current_material = None
+current_feedback = False
+
+materials = {
+    pygame.K_1: wood,
+    pygame.K_2: rubber,
+    pygame.K_3: glass,
+    pygame.K_4: steel
+}
 
 #forces
 def air_resistance_f(velocity):
@@ -91,6 +95,17 @@ while True:
                 PPM -= 10
                 if PPM < 10:
                     PPM = 10
+        elif event.type == pygame.KEYDOWN:
+            if not current_feedback:
+                if event.key in materials:
+                    current_material = materials[event.key]
+                    current_feedback = True
+
+                    e = current_material.e
+                    mu = current_material.roughness
+                    density = current_material.density
+                    mass = (4/3) * math.pi * (ball_radius**3) * density
+                    weight = mass * g            
         elif event.type == pygame.VIDEORESIZE:
             screen_width = event.w
             screen_height = event.h
@@ -107,6 +122,28 @@ while True:
     offset[1] = (screen_height/2)
     screen.fill((44, 48, 54))
     screen.blit(fps_surface, (10, 10))
+
+    if not current_feedback:
+
+        title_font = pygame.font.SysFont(None, 60)
+        menu_font = pygame.font.SysFont(None, 40)
+
+        title = title_font.render("Please select your material", True, (255,255,255))
+
+        wood_text = menu_font.render("1 - Wood", True, wood.colour)
+        rubber_text = menu_font.render("2 - Rubber", True, rubber.colour)
+        glass_text = menu_font.render("3 - Glass", True, glass.colour)
+        steel_text = menu_font.render("4 - Steel", True, steel.colour)
+
+        screen.blit(title, (screen_width//2 - 180, 200))
+
+        screen.blit(wood_text, (screen_width//2 - 100, 320))
+        screen.blit(rubber_text, (screen_width//2 - 100, 380))
+        screen.blit(glass_text, (screen_width//2 - 100, 440))
+        screen.blit(steel_text, (screen_width//2 - 100, 500))
+
+        pygame.display.flip()
+        continue
     position[0] = ((displacement[0] * PPM) + offset[0])
     position[1] = ((displacement[1] * PPM) + offset[1])
     pygame.draw.circle(screen, (155, 0, 0), (position[0], position[1]), int(ball_radius * PPM))
