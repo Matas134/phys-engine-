@@ -144,7 +144,12 @@ while True:
         continue
     position[0] = ((displacement[0] * PPM) + offset[0])
     position[1] = ((displacement[1] * PPM) + offset[1])
-    pygame.draw.circle(screen, (155, 0, 0), (position[0], position[1]), int(ball_radius * PPM))
+    ball_colour = (155, 0, 0)
+
+    if current_material is not None:
+        ball_colour = current_material.colour
+
+    pygame.draw.circle(screen, ball_colour, (position[0], position[1]), int(ball_radius * PPM))
     rectangle_height = 100
     rectangle_length = 80
     pygame.draw.rect(screen, (155,155,155),((offset[0] - (rectangle_length/2)*PPM)  ,((4)*PPM) + offset[1] ,rectangle_length*PPM ,rectangle_height*PPM ))
@@ -162,6 +167,17 @@ while True:
             velocity[1] = 0
             normal_force = -sum_forces[1]
             sum_forces[1] += normal_force  #reaction force
+
+            time.sleep(1.5)
+
+            current_feedback = False
+            current_material = None
+
+            displacement = [0.0, 0.0]
+            velocity = [0.0, 0.0]
+            acceleration = [0.0, 0.0]
+            sum_forces = [0.0, 0.0]
+            current_time = 0
     #acceleration velocity displacement
     acceleration[1] = sum_forces[1] / mass
     velocity[1] += acceleration[1] * dt
