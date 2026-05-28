@@ -1,2 +1,5 @@
 # phys-engine-
-a basic physics engine coded in python 
+
+# A basic physics engine coded in python. #
+
+Includes the formulas of: ...
