@@ -15,11 +15,7 @@ acceleration = [0.0, 0.0]
 displacement = [0.0, 0.0]
 forces = [0.0, 0.0]
 position = [0.0, 0.0]
-
-velocity[0] = initial_velocity[0]
-velocity[1] = initial_velocity[1]
-
-
+#time
 dt = 0.1
 current_time = 0
 time_duration = 10
@@ -43,8 +39,10 @@ class Particle:
         self.name = name
         self.radius = radius
         self.material = material
-        self.position = [0.0, 0.0]
         self.velocity = [0.0, 0.0]
+        self.acceleration = [0.0, 0.0]
+        self.displacement = [0.0, 0.0]
+        self.position = [0.0, 0.0]
 #particles
 ball = Particle("ball",ball_radius ,rubber)
 
