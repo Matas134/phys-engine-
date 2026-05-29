@@ -75,16 +75,25 @@ materials = {
 }
 
 #forces
-def air_resistance_f(velocity):
+def air_resistance_f(velocity_x, velocity_y):
     density_air = 1.225
     drag_coefficient = 0.47
     area = math.pi * (ball_radius**2)
-    force_magnitude = 0.5 * density_air * (velocity**2) * drag_coefficient * area
-    if velocity > 0.0 :
-        force = -force_magnitude
-    else:
-        force = force_magnitude
-    return force
+    if velocity_x == 0:
+        force_magnitude = 0.5 * density_air * (velocity_y**2) * drag_coefficient * area
+        if velocity_y > 0.0 :
+            force = -force_magnitude
+        else:
+            force = force_magnitude
+        return force
+    if velocity_y == 0:
+        force_magnitude = 0.5 * density_air * (velocity_x**2) * drag_coefficient * area
+        if velocity_x > 0.0 :
+            force = -force_magnitude
+        else:
+            force = force_magnitude
+        return force
+
 
 screen_width = 1920
 screen_height = 1080
