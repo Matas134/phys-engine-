@@ -77,7 +77,7 @@ materials = {
 #forces
 def air_resistance_f(velocity_x, velocity_y):
     density_air = 1.225
-    drag_coefficient = 0.47
+    drag_coefficient = 0.1
     area = math.pi * (ball_radius**2)
     if velocity_x == 0:
         force_magnitude = 0.5 * density_air * (velocity_y**2) * drag_coefficient * area
@@ -92,6 +92,9 @@ def air_resistance_f(velocity_x, velocity_y):
             force = -force_magnitude
         else:
             force = force_magnitude
+        return force
+    else:
+        force = 0
         return force
 
 
@@ -183,41 +186,57 @@ while True:
     rectangle_height = 100
     rectangle_length = 80
     pygame.draw.rect(screen, (155,155,155),((offset[0] - (rectangle_length/2)*PPM)  ,((4)*PPM) + offset[1] ,rectangle_length*PPM ,rectangle_height*PPM ))
-    #X force components
 
-    #Y force components
-    drag_AR = air_resistance_f(current_particle.velocity[1])
-    current_particle.sum_forces[1] = drag_AR + weight
-    #collisions
-    if current_particle.displacement[1] >= 4-ball_radius:
+    # X force components
+    driving_force = 0
+    drag_X = air_resistance_f(current_particle.velocity[0], 0)
+    current_particle.sum_forces[0] = drag_X + driving_force
+
+    # Y force components
+    drag_Y = air_resistance_f(0, current_particle.velocity[1])
+    current_particle.sum_forces[1] = drag_Y + weight
+
+
+    #collision
+    if current_particle.displacement[1] >= 4-ball_radius :
         current_particle.displacement[1] = 4-ball_radius
-        if abs(current_particle.velocity[1]) > 0.1:
+        normal_force = -current_particle.sum_forces[1]
+        current_particle.sum_forces[1] += normal_force  # reaction force
+        current_particle.sum_forces[0] += current_material.roughness * normal_force  # fr = mu*Reaction force
+        if abs(current_particle.velocity[1]) > 0.01:
             current_particle.velocity[1] *= -e
+
         else:
             current_particle.velocity[1] = 0
-            normal_force = -current_particle.sum_forces[1]
-            current_particle.sum_forces[1] += normal_force  #reaction force
 
+
+        if abs(current_particle.velocity[1]) <= 0.01 and abs(current_particle.velocity[0] <= 0.01):
             time.sleep(1.5)
 
             current_feedback = False
             current_material = None
 
             current_particle.displacement = [0.0, 0.0]
-            current_particle.velocity = [0.0, 0.0]
+            current_particle.velocity = [initial_velocity[0], initial_velocity[1]]
             current_particle.acceleration = [0.0, 0.0]
             current_particle.sum_forces = [0.0, 0.0]
             current_particle.current_time = 0
-    #acceleration velocity displacement
+
+
+
+
+    #acceleration velocity displacement Y
     current_particle.acceleration[1] = current_particle.sum_forces[1] / mass
     current_particle.velocity[1] += current_particle.acceleration[1] * dt
     current_particle.displacement[1] += current_particle.velocity[1] * dt
-
+    #acceleration velocity displacement X
+    current_particle.acceleration[0] = current_particle.sum_forces[0] / mass
+    current_particle.velocity[0] += current_particle.acceleration[0] * dt
+    current_particle.displacement[0] += current_particle.velocity[0] * dt
 
 
 #console
     print(f"seconds :{current_time}")
-    #Y values
     print(f"total force  X: {current_particle.sum_forces[0]} Y:{current_particle.sum_forces[1]}")
     print(f"acceleration X: {current_particle.acceleration[0]} Y:{current_particle.acceleration[1]}")
     print(f"velocity     X: {current_particle.velocity[0]} Y:{current_particle.velocity[1]}")
